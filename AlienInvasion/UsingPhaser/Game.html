@@ -7,52 +7,144 @@
 
     <script>
     var config = {
-        type: Phaser.AUTO,
-        width: 800,
-        height: 600,
+    type: Phaser.WEBGL,
+    parent: 'phaser-example',
+    width: 600,
+    height: 600,
         physics: {
-            default: 'arcade',
-            arcade: {
-                gravity: { y: 200 }
+        default: 'impact',
+        impact: {
+            setBounds: {
+                x: 0,
+                y: 0,
+                width: 600,
+                height: 600,
+                thickness: 32
             }
-        },
-        scene: {
-            preload: preload,
-            create: create
         }
-    };
+    },
+    scene: {
+        preload: preload,
+        create: create,
+		update: update,
+		extend: {
+            player: null,
+            thrust: null,
+            flares: null,
+            bullets: null,
+            lastFired: 0,
+			//createAliens: createAliens
+		}
+	}
+};
+	var game = new Phaser.Game(config);
+	var sprite;
+	
+	function preload ()
+	{
+		this.load.image('grey-square', 'images/grey-square.png');
+	}
+	
+	function create ()
+	{
+		var Bullet = new Phaser.Class({
+        Extends: Phaser.GameObjects.Image,
+        initialize:
 
-    var game = new Phaser.Game(config);
+        function Bullet (scene)
+        {
+            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'grey-square');
 
-    function preload ()
-    {
-        this.load.setBaseURL('http://labs.phaser.io');
+            this.speed = 0;
+            this.born = 0;
+        },
+		update: function (time, delta)
+        {
+            this.x += this.speed * delta;
 
-        this.load.image('sky', 'assets/skies/space3.png');
-        this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-        this.load.image('red', 'assets/particles/red.png');
-    }
+            this.born += delta;
 
-    function create ()
-    {
-        this.add.image(400, 300, 'sky');
+            if (this.born > 1000)
+            {
+                this.setActive(false);
+                this.setVisible(false);
+            }
+        }
+		fire: function (player)
+        {
+            this.setPosition(player.x, player.y);
 
-        var particles = this.add.particles('red');
+            if (player.flipX)
+            {
+                //  Facing left
+                this.speed = Phaser.Math.GetSpeed(-1000 + player.vel.x, 1);
+            }
+            else
+            {
+                //  Facing right
+                this.speed = Phaser.Math.GetSpeed(1000 + player.vel.x, 1);
+            }
 
-        var emitter = particles.createEmitter({
-            speed: 100,
-            scale: { start: 1, end: 0 },
-            blendMode: 'ADD'
-        });
+            this.born = 0;
+        },
+		this.bullets = this.add.group({ classType: Bullet, runChildUpdate: true});
+		
+		this.player = this.impact.add.sprite(1600, 200, 'grey-square');
+		game.canvas.addEventListener('mousedown', function () {
+			game.input.mouse.requestPointerLock();
+			}
+		});
+        
+        
+        
+        
+	function update (time, delta){
+		this.bullets.children.each(function(b) {
+			if (b.active)
+			{
+				this.flares.setPosition(b.x, b.y);
+				this.flares.setSpeed(b.speed + 500 * -1);
+				this.flares.emitParticle(1);
+			}
+		}, this);
+	}
+    this.thrust.setPosition(this.player.x, this.player.y);
 
-        var logo = this.physics.add.image(400, 100, 'logo');
+	this.input.on('pointermove', function (pointer) {
 
-        logo.setVelocity(100, 200);
-        logo.setBounce(1, 1);
-        logo.setCollideWorldBounds(true);
+        if (this.input.mouse.locked)
+        {
+            sprite.x += pointer.movementX;
+            sprite.y += pointer.movementY;
 
-        emitter.startFollow(logo);
-    }
+            sprite.x = Phaser.Math.Wrap(sprite.x, 0, game.renderer.width);
+            sprite.y = Phaser.Math.Wrap(sprite.y, 0, game.renderer.height);
+
+            if (pointer.movementX > 0) { sprite.setRotation(0.1); }
+            else if (pointer.movementX < 0) { sprite.setRotation(-0.1); }
+            else { sprite.setRotation(0); }
+			var bullet = this.bullet.get();
+			bullet.setActive(true);
+			bullet.setVisible(true);
+			if (bullet)
+			{
+				bullet.fire(this.player);
+
+				this.lastFired = time + 100;
+			}
+			
+        }
+    }, this);
+	this.input.keyboard.on('keydown_Q', function (event) {
+        if (game.input.mouse.locked)
+        {
+            game.input.mouse.releasePointerLock();
+        }
+    }, 0, this);
+}
+
+
+		
     </script>
 
 </body>
