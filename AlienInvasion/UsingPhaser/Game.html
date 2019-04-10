@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
 </head>
 <body>
 
@@ -17,8 +17,8 @@
             setBounds: {
                 x: 0,
                 y: 0,
-                width: 600,
-                height: 600,
+                width: 1000,
+                height: 1000,
                 thickness: 32
             }
         }
@@ -93,11 +93,10 @@
     
     this.bullets = this.add.group({ classType: Bullet, runChildUpdate: true});
 		
-    this.player = this.impact.add.sprite(1600, 200, 'grey-square').setDepth(1);
+    this.player = this.impact.add.sprite(200, 200, 'grey-square').setDepth(1);
         
         game.canvas.addEventListener('mousedown', function () {
 			game.input.mouse.requestPointerLock();
-        this.setPosition(this.player.x, this.player.y);
         });
     
     }
@@ -107,12 +106,16 @@ function update (time, delta)
 
         if (this.input.mouse.locked)
         {
-            sprite.x += pointer.movementX;
-            sprite.y += pointer.movementY;
-
-            sprite.x = Phaser.Math.Wrap(sprite.x, 0, game.renderer.width);
+            //this.impact.update/edit/.sprite(pointer.movementX, pointer.movementY, 'grey-square').setDepth(1)
+            
+             sprite.x = Phaser.Math.Wrap(sprite.x, 0, game.renderer.width);
             sprite.y = Phaser.Math.Wrap(sprite.y, 0, game.renderer.height);
 
+            sprite.x += pointer.movementX;
+            sprite.y += pointer.movementY;
+            
+
+           
             if (pointer.movementX > 0) { sprite.setRotation(0.1); }
             else if (pointer.movementX < 0) { sprite.setRotation(-0.1); }
             else { sprite.setRotation(0); }
