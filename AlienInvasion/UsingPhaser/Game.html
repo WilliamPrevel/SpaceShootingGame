@@ -29,14 +29,12 @@
         preload: preload,
         create: create,
 		update: update,
-        //get: get,
 		extend: {
             player: null,
             thrust: null,
             flares: null,
             bullets: null,
             lastFired: 0,
-			//createAliens: createAliens
 		}
 	}
 };
@@ -66,7 +64,7 @@
         {
             this.setPosition(player.x, player.y);
             
-            this.speed = Phaser.Math.GetSpeed(100, 1);
+            this.speed = Phaser.Math.GetSpeed(1, 1000);
 
             this.born = 0;
         },
@@ -88,8 +86,9 @@
     
     this.bullets = this.add.group({ classType: Bullet, runChildUpdate: true});
 		
-    this.player = this.impact.add.sprite(200, 200, 'grey-square').setDepth(1);
+    this.player = this.impact.add.sprite(200, 200, 'grey-square').setInteractive();
         
+        //playe movement
         game.canvas.addEventListener('mousedown', function () {
 			game.input.mouse.requestPointerLock();
         });
@@ -108,7 +107,9 @@
             else { sprite.setRotation(0); }
             
         }
+        
     }, this);
+
 }
 function update (time, delta)
 {
