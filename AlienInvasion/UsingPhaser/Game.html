@@ -7,7 +7,8 @@
 
     <script>
     var config = {
-    type: Phaser.WEBGL,
+    type: Phaser.WEBGL, 
+    type: Phaser.AUTO,
     parent: 'phaser-example',
     width: 600,
     height: 600,
@@ -27,6 +28,7 @@
         preload: preload,
         create: create,
 		update: update,
+        //get: get,
 		extend: {
             player: null,
             thrust: null,
@@ -94,8 +96,6 @@
 
         if (this.input.mouse.locked)
         {
-            //this.impact.update/edit/.sprite(pointer.movementX, pointer.movementY, 'grey-square').setDepth(1)
-            
             sprite.x += pointer.movementX;
             sprite.y += pointer.movementY;
             
@@ -106,29 +106,23 @@
             else if (pointer.movementX < 0) { sprite.setRotation(-0.1); }
             else { sprite.setRotation(0); }
             
-			
-			
         }
     }, this);
 }
-function update ()
+function update (time, delta)
 {
     //Error here
-    var bullet = this.bullet.get();
+    var bullet = this.bullets.get();
     //Error here
-			bullet.setActive(true);
-			bullet.setVisible(true);
-			if (bullet)
-			{
-				bullet.fire(this.player);
+	bullet.setActive(true);
+    bullet.setVisible(true);
+    if (bullet)
+    {
+        bullet.fire(this.player);
 
-				this.lastFired = time + 100;
-			}
+        this.lastFired = time + 100;
+    }
 }
-
-
-
-		
     </script>
 
 </body>
